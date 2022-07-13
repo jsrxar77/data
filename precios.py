@@ -9,7 +9,6 @@ def remove_tokens(data):
 # Loading dataframes
 df_precios = pd.read_csv('precios.txt', names=['Nombre','Valor','Producto'], skiprows=0, sep='$')
 df_conversion = pd.read_excel('conversiones.xlsx')
-# df_conversion = pd.read_csv('conversiones.csv')
 
 # Transform dataframes: remove extra characters 
 df_obj = df_precios.select_dtypes(['object'])
@@ -26,10 +25,7 @@ for i, row in df_precios.iterrows():
         df_precios.at[i,'Producto'] = df_filtered_conversion_found['Producto'].values[0]
     else:
         df_precios.at[i,'Producto'] = ''
-    
-# Show dataset
-print(df_conversion)
-print(df_precios)
 
 # Export to excel
-df_precios.to_excel('precios-final.xlsx')
+df_precios_final = df_precios[['Producto','Valor','Nombre']]
+df_precios_final.to_excel('precios-final.xlsx', index = False)
