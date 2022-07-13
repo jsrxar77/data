@@ -1,7 +1,3 @@
-from wsgiref import headers
-import pandas as pd
-import numpy as np
-from sklearn.datasets import load_iris
 import pandas as pd
   
 def remove_tokens(data):
@@ -10,28 +6,26 @@ def remove_tokens(data):
     data = data.str.strip()
     return data
 
-# Loading dataet
-df = pd.read_csv('precios.txt', names=['Nombre','Valor','Producto'], skiprows=0, sep='$')
-df_conversion = pd.read_csv('conversion.csv')
+# Loading dataframes
+df_precios = pd.read_csv('precios.txt', names=['Nombre','Valor','Producto'], skiprows=0, sep='$')
+df_conversion = pd.read_csv('conversiones.csv')
 
-# Transform dataset
-df_obj = df.select_dtypes(['object'])
-df[df_obj.columns] = df_obj.apply(lambda x: remove_tokens(x))
+# Transform dataframes: remove extra characters 
+df_obj = df_precios.select_dtypes(['object'])
+df_precios[df_obj.columns] = df_obj.apply(lambda x: remove_tokens(x))
 
-# Show dataset
-print(df_conversion)
-print(df)
-
-for i, row in df.iterrows():
+# Transform dataframes: get the right product 
+for i, row in df_precios.iterrows():
 
     nombre_to_lookup = row['Nombre']
     
-    conversion_row_found = df_conversion.loc[df_conversion['Nombre'] == nombre_to_lookup]
+    df_filtered_conversion_found = df_conversion.loc[df_conversion['Nombre'] == nombre_to_lookup]
     
-    if conversion_row_found['Producto'].any():
-        df.at[i,'Producto'] = conversion_row_found['Producto'].values[0]
+    if df_filtered_conversion_found['Producto'].any():
+        df_precios.at[i,'Producto'] = df_filtered_conversion_found['Producto'].values[0]
     else:
-        df.at[i,'Producto'] = ''
+        df_precios.at[i,'Producto'] = ''
     
+# Show dataset
 print(df_conversion)
-print(df)
+print(df_precios)
