@@ -2,7 +2,6 @@ import pandas as pd
   
 def remove_tokens(data):
     data = data.str.replace('s/s','')
-
     data = data.str.replace('*','')
 
     # removing emoticons and...
